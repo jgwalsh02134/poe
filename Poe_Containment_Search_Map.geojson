@@ -1,0 +1,22 @@
+{
+  "type": "FeatureCollection",
+  "name": "Poe Containment Search Map",
+  "features": [
+    {"type":"Feature","properties":{"name":"PLS — 162 Menands Road","type":"PLS","last_seen":"Sunday July 12 approximately 9 PM"},"geometry":{"type":"Point","coordinates":[-73.744424,42.701169]}},
+    {"type":"Feature","properties":{"name":"Outer containment perimeter","type":"perimeter","note":"Planning boundary; not a road closure"},"geometry":{"type":"Polygon","coordinates":[[[-73.7625,42.6900],[-73.7625,42.7150],[-73.7190,42.7148],[-73.7070,42.6995],[-73.7220,42.6890],[-73.7625,42.6900]]]}},
+    {"type":"Feature","properties":{"name":"Zone 0 — Core","priority":1},"geometry":{"type":"Polygon","coordinates":[[[-73.7482,42.7035],[-73.7421,42.7037],[-73.7398,42.7002],[-73.7420,42.6972],[-73.7474,42.6973],[-73.7492,42.7000],[-73.7482,42.7035]]]}},
+    {"type":"Feature","properties":{"name":"Zone 1 — Little's Lake","priority":1},"geometry":{"type":"Polygon","coordinates":[[[-73.7455,42.7010],[-73.7390,42.7020],[-73.7368,42.6995],[-73.7380,42.6955],[-73.7448,42.6955],[-73.7465,42.6980],[-73.7455,42.7010]]]}},
+    {"type":"Feature","properties":{"name":"Zone 2 — North / northeast","priority":2},"geometry":{"type":"Polygon","coordinates":[[[-73.7505,42.7018],[-73.7525,42.7140],[-73.7410,42.7150],[-73.7350,42.7100],[-73.7400,42.7040],[-73.7505,42.7018]]]}},
+    {"type":"Feature","properties":{"name":"Zone 3 — Albany Rural Cemetery","priority":2},"geometry":{"type":"Polygon","coordinates":[[[-73.7410,42.7030],[-73.7400,42.7155],[-73.7250,42.7160],[-73.7235,42.7060],[-73.7295,42.6980],[-73.7410,42.7030]]]}},
+    {"type":"Feature","properties":{"name":"Zone 4 — Menands hazard sector","priority":3},"geometry":{"type":"Polygon","coordinates":[[[-73.7370,42.6880],[-73.7370,42.7010],[-73.7120,42.7040],[-73.7050,42.6995],[-73.7120,42.6875],[-73.7370,42.6880]]]}},
+    {"type":"Feature","properties":{"name":"Zone 5 — West residential buffer","priority":3},"geometry":{"type":"Polygon","coordinates":[[[-73.7650,42.6880],[-73.7650,42.7150],[-73.7500,42.7150],[-73.7440,42.7015],[-73.7410,42.6900],[-73.7650,42.6880]]]}},
+    {"type":"Feature","properties":{"name":"P2 — Little's Lake entrance"},"geometry":{"type":"Point","coordinates":[-73.74123,42.69730]}},
+    {"type":"Feature","properties":{"name":"P3 — Little Lane / Patroon Place"},"geometry":{"type":"Point","coordinates":[-73.74573,42.69843]}},
+    {"type":"Feature","properties":{"name":"P4 — Schuyler Road / Turner Lane"},"geometry":{"type":"Point","coordinates":[-73.7488,42.7106]}},
+    {"type":"Feature","properties":{"name":"P5 — Beth Emeth / Kromme Kill"},"geometry":{"type":"Point","coordinates":[-73.73779,42.71051]}},
+    {"type":"Feature","properties":{"name":"P6 — Albany Rural western approaches"},"geometry":{"type":"Point","coordinates":[-73.7390,42.7040]}},
+    {"type":"Feature","properties":{"name":"P7 — NY 378 / Ganser-Smith"},"geometry":{"type":"Point","coordinates":[-73.72741,42.69593]}},
+    {"type":"Feature","properties":{"name":"P8 — Broadway / rail / bridge approach"},"geometry":{"type":"Point","coordinates":[-73.7125,42.6990]}},
+    {"type":"Feature","properties":{"name":"P9 — Loudon Road / western buffer"},"geometry":{"type":"Point","coordinates":[-73.7625,42.7008]}}
+  ]
+}
