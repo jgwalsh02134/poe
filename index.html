@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Poe Search — Containment Perimeter</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#17212b;background:#eef2f5}
+    header{padding:14px 18px;background:#82111f;color:#fff} h1{font-size:24px;margin:0 0 4px} header p{margin:0;font-size:14px}
+    .layout{display:grid;grid-template-columns:360px 1fr;height:calc(100vh - 76px)} aside{overflow:auto;padding:14px;background:#fff;border-right:1px solid #cbd5df}
+    #map{height:100%;min-height:620px}.card{border:1px solid #d8e0e7;border-radius:10px;padding:11px;margin-bottom:10px;background:#fff}.card h2{font-size:17px;margin:0 0 7px}.card p,.card li{font-size:13px;line-height:1.35}.card p{margin:5px 0}.card ol,.card ul{padding-left:20px;margin:5px 0}
+    .warning{background:#fff4cc;border-color:#e0ac00}.danger{background:#ffe5e8;border-color:#c51e3a}.small{font-size:11px;color:#52606d}.legend-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:12px}.swatch{width:20px;height:12px;border:2px solid;border-radius:3px}.post{display:inline-block;background:#111827;color:#fff;border-radius:50%;width:22px;height:22px;text-align:center;line-height:22px;font-weight:700;font-size:11px}
+    .leaflet-popup-content{font-size:13px;line-height:1.35}.leaflet-popup-content strong{font-size:14px}
+    @media(max-width:800px){header{padding:10px 12px}.layout{display:flex;flex-direction:column;height:auto}aside{max-height:none;border-right:0}#map{height:68vh;min-height:520px;order:-1}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Poe Search: Containment Perimeter</h1>
+  <p>Point Last Seen: 162 Menands Road / Orchard Grove • Missing Sunday, July 12, about 9 PM</p>
+</header>
+<div class="layout">
+  <aside>
+    <div class="card danger">
+      <h2>Operational objective</h2>
+      <p>Detect Poe crossing out of the search area, record her direction, and redirect search teams. This is <strong>soft containment</strong>: volunteers observe from safe public locations and never block roads, trespass, enter railroad property, or stop traffic.</p>
+    </div>
+    <div class="card">
+      <h2>Search hierarchy</h2>
+      <ol>
+        <li><strong>Core:</strong> PLS property, Orchard Grove, Barry Court, Little Lane and Patroon Place.</li>
+        <li><strong>Highest-probability corridor:</strong> Weare C. Little Memorial Park/Little’s Lake, its trails, shoreline and wooded drainage.</li>
+        <li><strong>North/northeast:</strong> Schuyler Hills, Turner Lane, Schuyler Road, Kromme Kill and Beth Emeth Cemetery.</li>
+        <li><strong>East:</strong> Albany Rural Cemetery, Moordenaers Kill, ravines, internal roads and ponds.</li>
+        <li><strong>South/east hazard sector:</strong> NY 378, Ganser-Smith Park, Broadway, rail corridor, Menands Bridge and Hudson River.</li>
+        <li><strong>West buffer:</strong> residential streets toward Loudon Road/US 9.</li>
+      </ol>
+    </div>
+    <div class="card warning">
+      <h2>Containment-post procedure</h2>
+      <ul>
+        <li>Use pairs; remain on public property or with permission.</li>
+        <li>Watch quietly from a parked vehicle or fixed location.</li>
+        <li>If seen: record exact time, pin and direction; photograph/video; call 518-860-2077.</li>
+        <li>Do not create a crowd. One familiar person may call “Poe” and offer food while others stay back.</li>
+        <li>If Poe enters a highway, bridge or active railroad area, call 911.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Recenter rule</h2>
+      <p>A credible sighting becomes the new temporary LKP. Place observers one travel junction ahead of her direction, move the inner search ring to that sighting, and preserve the original outer perimeter until two later sightings establish a new direction.</p>
+    </div>
+    <div class="card">
+      <h2>Map legend</h2>
+      <div class="legend-row"><span class="swatch" style="background:#ff334455;border-color:#c40019"></span>Core / immediate search</div>
+      <div class="legend-row"><span class="swatch" style="background:#ffb00044;border-color:#d07800"></span>Primary woodland/water search</div>
+      <div class="legend-row"><span class="swatch" style="background:#7c3aed33;border-color:#6d28d9"></span>Cemetery/ravine search</div>
+      <div class="legend-row"><span class="swatch" style="background:#00a86b33;border-color:#00814f"></span>Residential buffer</div>
+      <div class="legend-row"><span class="swatch" style="background:#ff000022;border-color:#a80000"></span>Traffic/rail/water hazard sector</div>
+      <p class="small">Colored boundaries are operational planning approximations. The live basemap supplies the exact roads, paths, water and property geography.</p>
+    </div>
+  </aside>
+  <div id="map" aria-label="Interactive containment and search map"></div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map=L.map('map',{zoomControl:true}).setView([42.7012,-73.7388],14);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+
+const pane=(name,z)=>{map.createPane(name);map.getPane(name).style.zIndex=z}; pane('zones',350);pane('corridors',360);pane('posts',650);
+const zone=(coords,style,title,text)=>L.polygon(coords,{pane:'zones',...style}).addTo(map).bindPopup(`<strong>${title}</strong><br>${text}`);
+
+// Operational sectors, intentionally overlapping at travel corridors.
+zone([[42.7035,-73.7482],[42.7037,-73.7421],[42.7002,-73.7398],[42.6972,-73.7420],[42.6973,-73.7474],[42.7000,-73.7492]],{color:'#c40019',weight:3,fillColor:'#ff3344',fillOpacity:.20},'Zone 0 — Core','PLS property, Orchard Grove, Barry Court, Little Lane, Patroon Place and immediate concealment sites.');
+zone([[42.7010,-73.7455],[42.7020,-73.7390],[42.6995,-73.7368],[42.6955,-73.7380],[42.6955,-73.7448],[42.6980,-73.7465]],{color:'#d07800',weight:3,fillColor:'#ffb000',fillOpacity:.19},'Zone 1 — Little’s Lake / wooded drainage','Highest-priority trails, shoreline, peninsula, park structures and wooded approaches.');
+zone([[42.7018,-73.7505],[42.7140,-73.7525],[42.7150,-73.7410],[42.7100,-73.7350],[42.7040,-73.7400]],{color:'#d07800',weight:3,fillColor:'#ffb000',fillOpacity:.15},'Zone 2 — North / northeast corridor','Schuyler Hills, Turner Lane, Schuyler Road, Kromme Kill and Beth Emeth approaches.');
+zone([[42.7030,-73.7410],[42.7155,-73.7400],[42.7160,-73.7250],[42.7060,-73.7235],[42.6980,-73.7295]],{color:'#6d28d9',weight:3,fillColor:'#7c3aed',fillOpacity:.15},'Zone 3 — Albany Rural Cemetery','Internal roads, ravines, Moordenaers Kill, Cold Spring, North Pond and cemetery gates. Coordinate entry with staff.');
+zone([[42.6880,-73.7370],[42.7010,-73.7370],[42.7040,-73.7120],[42.6995,-73.7050],[42.6875,-73.7120]],{color:'#a80000',weight:3,fillColor:'#ff0000',fillOpacity:.10},'Zone 4 — Menands hazard sector','NY 378, Ganser-Smith Park, Broadway, rail corridor, bike trail, Menands Bridge and Hudson approaches. Observe only from safe legal locations.');
+zone([[42.6880,-73.7650],[42.7150,-73.7650],[42.7150,-73.7500],[42.7015,-73.7440],[42.6900,-73.7410]],{color:'#00814f',weight:3,fillColor:'#00a86b',fillOpacity:.11},'Zone 5 — West residential buffer','Residential streets and camera canvass toward Loudon Road/US 9.');
+
+// Outer detection boundary follows major road/corridor anchors.
+const perimeter=[[42.6900,-73.7625],[42.7150,-73.7625],[42.7148,-73.7190],[42.6995,-73.7070],[42.6890,-73.7220],[42.6900,-73.7625]];
+L.polyline(perimeter,{pane:'corridors',color:'#111827',weight:5,dashArray:'10 8'}).addTo(map).bindPopup('<strong>Outer containment perimeter</strong><br>West: Loudon Road/US 9 • North: Schuyler/Spring Street corridor • East: Broadway/rail corridor • South: NY 378/Menand Road.');
+
+// Likely low-friction travel corridors.
+const corridor=(coords,name)=>L.polyline(coords,{pane:'corridors',color:'#00a6c8',weight:5,opacity:.8,dashArray:'4 7'}).addTo(map).bindPopup(`<strong>Travel corridor</strong><br>${name}`);
+corridor([[42.7012,-73.7444],[42.6990,-73.7414],[42.6979,-73.7401]],'PLS → Little’s Lake trails and shoreline');
+corridor([[42.7012,-73.7444],[42.7060,-73.7505],[42.7105,-73.7493],[42.7116,-73.7427]],'PLS → Schuyler Hills / Turner Lane / Schuyler Road');
+corridor([[42.7012,-73.7444],[42.7060,-73.7505],[42.7105,-73.7378],[42.7077,-73.7339]],'Drainages → Beth Emeth / Albany Rural Cemetery');
+corridor([[42.6979,-73.7401],[42.6959,-73.7274],[42.6990,-73.7130]],'NY 378 → Ganser-Smith Park → Broadway/rail');
+
+const pls=L.circleMarker([42.701169,-73.744424],{radius:10,color:'#fff',weight:3,fillColor:'#c40019',fillOpacity:1,pane:'posts'}).addTo(map);
+pls.bindPopup('<strong>PLS / LKP anchor</strong><br>162 Menands Road, near Orchard Grove<br>Last seen Sunday, July 12, about 9 PM.').openPopup();
+L.circle([42.701169,-73.744424],{radius:400,color:'#c40019',weight:2,fill:false,dashArray:'6 6'}).addTo(map).bindPopup('<strong>Immediate 400 m ring</strong><br>Fast doorbell-camera canvass and concealment check.');
+
+const places=[
+ ['Little’s Lake / Weare C. Little Park',42.697952,-73.740089,'Trails, shoreline and wooded cover.'],
+ ['Beth Emeth Cemetery',42.710511,-73.737792,'Coordinate with cemetery staff.'],
+ ['Albany Rural Cemetery',42.707681,-73.733901,'467-acre ravine, road and stream network.'],
+ ['North Pond',42.713149,-73.730922,'Water source inside Albany Rural Cemetery.'],
+ ['Ganser-Smith Memorial Park',42.695926,-73.727405,'Park near NY 378/Menands corridor.'],
+ ['Broadway / rail corridor',42.6990,-73.7130,'High hazard; observe from legal public locations only.'],
+ ['Menands Bridge approach',42.699578,-73.709061,'Escalation point toward Hudson River/Troy.'],
+ ['Mohawk-Hudson Bike-Hike Trail',42.690149,-73.713734,'Linear travel corridor south/east of primary area.'
+];
+places.forEach(p=>L.marker([p[1],p[2]]).addTo(map).bindPopup(`<strong>${p[0]}</strong><br>${p[3]}`));
+
+const posts=[
+ ['P1','PLS / Orchard Grove',42.701169,-73.744424,'Command post and home-return watch.'],
+ ['P2','Little’s Lake entrance',42.69730,-73.74123,'Covers park entrance, trails and NY 377/378 movement.'],
+ ['P3','Little Lane / Patroon Place',42.69843,-73.74573,'Covers south edge of immediate neighborhood.'],
+ ['P4','Schuyler Road / Turner Lane',42.7106,-73.7488,'Covers northbound wooded/residential movement.'],
+ ['P5','Beth Emeth / Kromme Kill',42.71051,-73.73779,'Coordinate with staff; watch drainage and road exits.'],
+ ['P6','Albany Rural western approaches',42.7040,-73.7390,'Coordinate with staff; cover internal-road exits.'],
+ ['P7','NY 378 / Ganser-Smith',42.69593,-73.72741,'Vehicle observer only; stay safely off roadway.'],
+ ['P8','Broadway / rail / bridge approach',42.6990,-73.7125,'Hazard observation only; never enter tracks.'],
+ ['P9','Loudon Road / western buffer',42.7008,-73.7625,'Covers westbound residential escape.'
+];
+const icon=n=>L.divIcon({className:'',html:`<span class="post">${n}</span>`,iconSize:[22,22],iconAnchor:[11,11]});
+posts.forEach(p=>L.marker([p[2],p[3]],{icon:icon(p[0]),pane:'posts'}).addTo(map).bindPopup(`<strong>${p[0]} — ${p[1]}</strong><br>${p[4]}`));
+
+L.control.scale({imperial:true,metric:true}).addTo(map);
+</script>
+</body>
+</html>
